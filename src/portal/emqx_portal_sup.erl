@@ -15,7 +15,7 @@
 -module(emqx_portal_sup).
 -behavior(supervisor).
 
--export([start_link/0, start_link/1]).
+-export([start_link/0, start_link/1, portals/0]).
 
 -export([init/1]).
 
@@ -52,3 +52,9 @@ portal_spec({Name, Config}) ->
       modules => [emqx_portal]
      }.
 
+-spec(portals() -> [{node(), map()}]).
+portals() ->
+    [{name(Name), emqx_portal:status(Pid)} || {Name, Pid, _, _} <- supervisor:which_children(?MODULE)].
+
+name(Name) ->
+    Name -- "emqx_portal_".
